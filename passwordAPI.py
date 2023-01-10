@@ -2,7 +2,7 @@ import hashlib
 import requests
 import sys
 
-
+#API Call for fetching results
 def fetch_request_api(query_char):
     url = 'https://api.pwnedpasswords.com/range/' + query_char
     response = requests.get(url)
@@ -10,7 +10,7 @@ def fetch_request_api(query_char):
         raise RuntimeError(f'Error in API fetching, status {response.status_code}. Check the API and try again')
     return response
 
-
+#for verifying the response data from hash
 def get_password_leaks_count(response_data, hash_to_check):
     hashes = (line.split(':') for line in response_data.splitlines())
     for h, count in hashes:
@@ -18,7 +18,7 @@ def get_password_leaks_count(response_data, hash_to_check):
             return int(count)
     return 0
 
-
+#for converting password from text to hash
 def pwned_api_check(password):
     sha1pass = hashlib.sha1(password.encode('utf-8')).hexdigest().upper()
     first5chars, hash_tail = sha1pass[:5], sha1pass[5:]
@@ -26,7 +26,7 @@ def pwned_api_check(password):
     breach_count = get_password_leaks_count(response.text, hash_tail)
     return breach_count
 
-
+#Main fuction of the program
 def main(args):
     for password in args:
         count = pwned_api_check(password)
@@ -36,7 +36,7 @@ def main(args):
             print(f'{password} was not found')
     return 'Done'
 
-
+#Driver Function for invalid input
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         # Use sys.exit() only to display return message from the main()
